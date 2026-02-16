@@ -1,28 +1,32 @@
-const userMode = require('../model/user.model');
+const userModel = require('../model/user.model');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 exports.register = async (req, res) => {
   try {
     const { firstName, lastName, email, password } = req.body;
+    console.log(req.body);
 
-    const existingUser = await userMode.findOne({ email });
+    const existingUser = await userModel.findOne({ email: email });
     if (existingUser) {
       return res.status(400).json({ message: 'User already exists' });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const user = await userMode.create({
+    const user = await userModel.create({
       firstName,
       lastName,
       email,
       password: hashedPassword
     });
 
-    res.status(201).json({ message: 'User registered successfully', userId: user._id });
+    await user.save();
+
+   return res.status(201).json({ message: 'User registered successfully', userId: user._id });
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
+    console.log(error);
+   return res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
@@ -30,7 +34,11 @@ exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await userMode.findOne({ email });
+     if (!email || !password) {
+      return res.status(400).json({ message: 'Email and password are required' });
+    }
+
+    const user = await userModel.findOne({ email: email });
     if (!user) {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
@@ -40,10 +48,10 @@ exports.login = async (req, res) => {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
 
     res.json({ message: 'Login successful', token });
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
+    return res.status(500).json({ message: 'Server error', error: error.message });
   }
 };  

@@ -8,13 +8,21 @@ exports.shortenUrl = async (req, res) => {
       return res.status(400).json({ error: 'Original URL is required' });
     }
     const { originalUrl } = req.body;
+    let redisKey = `shortUrl:${originalUrl}`;
+
+    const shortCode = await redis.getCode(redisKey);
+    if (shortCode) {
+      return res.json({
+        shortUrl: `${process.env.BASE_URL}/${shortCode}`
+      });
+    }
 
     const url = await createShortUrl(originalUrl);
-
-  return res.json({
-    shortUrl: `${process.env.BASE_URL}/${url.shortCode}`
-  });
-} catch (error) {
+    await redis.setCode(redisKey, url.shortCode, 3600);
+    return res.json({
+      shortUrl: `${process.env.BASE_URL}/${url.shortCode}`
+    });
+  } catch (error) {
     console.error(error);
     return res.status(500).json({ error: 'Server error' });
   }
@@ -28,8 +36,9 @@ exports.redirectUrl = async (req, res) => {
     }
     const { code } = req.params;
 
+  const redisKey = `shortUrl:${code}`;
   //  Check Redis
-  const cachedUrl = await redis.get(code);
+  const cachedUrl = await redis.get(redisKey);
   if (cachedUrl) {
     await Url.updateOne({ shortCode: code }, { $inc: { clicks: 1 } });
     return res.redirect(cachedUrl);
@@ -40,7 +49,7 @@ exports.redirectUrl = async (req, res) => {
   if (!url) return res.status(404).send('URL not found');
 
   //  Cache it
-  await redis.set(code, url.originalUrl, { EX: 3600 });
+  await redis.set(redisKey, url.originalUrl, { EX: 3600 });
 
   url.clicks++;
   await url.save();
