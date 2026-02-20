@@ -1,0 +1,63 @@
+<div class="d-flex justify-content-center mt-4">
+	<div class="card shadow-sm" style="max-width:820px; width:100%">
+		<div class="card-body">
+			<h4 class="card-title mb-3">Shorten a URL</h4>
+
+			<form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+				<div class="row g-2 align-items-center">
+					<div class="col-md-8">
+						<label class="form-label">Long URL</label>
+						<input type="url" formControlName="url" class="form-control" placeholder="https://example.com/some/long/path" [class.is-invalid]="f['url'].touched && f['url'].invalid">
+						<div *ngIf="f['url'].touched && f['url'].invalid" class="invalid-feedback">
+							<div *ngIf="f['url'].errors?.['required']">Please enter a URL.</div>
+							<div *ngIf="f['url'].errors?.['pattern']">Please enter a valid URL (include http:// or https://).</div>
+						</div>
+					</div>
+
+					<div class="col-md-4">
+						<label class="form-label">Custom alias <small class="text-muted">(optional)</small></label>
+						<input type="text" formControlName="customAlias" class="form-control" placeholder="e.g. my-link">
+						<div class="form-text">Alphanumeric, dashes and underscores allowed.</div>
+					</div>
+				</div>
+
+				<div *ngIf="serverError" class="alert alert-danger mt-3">{{ serverError }}</div>
+
+				<div class="d-flex justify-content-end gap-2 mt-3">
+					<button class="btn btn-outline-secondary" type="button" (click)="form.reset()">Reset</button>
+					<button class="btn btn-primary" type="submit" [disabled]="submitting">
+						<span *ngIf="!submitting">Shorten</span>
+						<span *ngIf="submitting" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+					</button>
+				</div>
+			</form>
+
+			<div *ngIf="result" class="mt-4">
+				<h6>Short URL</h6>
+				<div class="d-flex gap-2 align-items-center">
+					<a [href]="result.shortUrl" target="_blank" rel="noopener" class="me-2">{{ result?.shortUrl }}</a>
+					<button class="btn btn-sm btn-outline-secondary" (click)="copy(result.shortUrl)">Copy</button>
+					  <button class="btn btn-sm btn-outline-primary" (click)="open(result?.shortUrl)">Open</button>
+				</div>
+				<div class="mt-2 text-muted">Original: <small>{{ result?.originalUrl }}</small></div>
+			</div>
+
+			<div *ngIf="recent?.length" class="mt-4">
+				<h6>Recent</h6>
+				<ul class="list-group">
+					<li *ngFor="let it of recent" class="list-group-item d-flex justify-content-between align-items-center">
+						<div>
+							<a [href]="it.shortUrl" target="_blank" rel="noopener">{{ it.shortUrl }}</a>
+							<div class="text-muted small">{{ it.originalUrl }}</div>
+						</div>
+						<div class="d-flex gap-1">
+							<button class="btn btn-sm btn-outline-secondary" (click)="copy(it.shortUrl)">Copy</button>
+							<a class="btn btn-sm btn-outline-primary" [href]="it.shortUrl" target="_blank">Open</a>    
+						</div>
+					</li>
+				</ul>
+			</div>
+
+		</div>
+	</div>
+</div>

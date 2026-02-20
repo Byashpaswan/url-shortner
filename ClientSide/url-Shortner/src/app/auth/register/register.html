@@ -1,0 +1,74 @@
+<div class="d-flex justify-content-center mt-4">
+	<div class="card shadow-sm" style="max-width:520px; width:100%">
+		<div class="card-body">
+			<h4 class="card-title mb-3">Create an account</h4>
+
+			<form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+
+				<div class="row g-2">
+					<div class="col-md-6">
+						<label class="form-label">First name</label>
+						<input type="text" formControlName="firstName" class="form-control" [class.is-invalid]="f['firstName'].touched && f['firstName'].invalid">
+						<div *ngIf="f['firstName'].touched && f['firstName'].invalid" class="invalid-feedback">
+							<div *ngIf="f['firstName'].errors?.['required']">First name is required.</div>
+							<div *ngIf="f['firstName'].errors?.['maxlength']">Maximum 40 characters allowed.</div>
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<label class="form-label">Last name</label>
+						<input type="text" formControlName="lastName" class="form-control" [class.is-invalid]="f['lastName'].touched && f['lastName'].invalid">
+						<div *ngIf="f['lastName'].touched && f['lastName'].invalid" class="invalid-feedback">
+							<div *ngIf="f['lastName'].errors?.['maxlength']">Maximum 40 characters allowed.</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="mb-3 mt-3">
+					<label class="form-label">Email</label>
+					<input type="email" formControlName="email" class="form-control" [class.is-invalid]="f['email'].touched && f['email'].invalid">
+					<div *ngIf="f['email'].touched && f['email'].invalid" class="invalid-feedback">
+						<div *ngIf="f['email'].errors?.['required']">Email is required.</div>
+						<div *ngIf="f['email'].errors?.['email']">Enter a valid email address.</div>
+					</div>
+				</div>
+
+				<div class="row g-2">
+					<div class="col-md-6">
+						<label class="form-label">Password</label>
+						<input type="password" formControlName="password" class="form-control" [class.is-invalid]="f['password'].touched && f['password'].invalid">
+						<div *ngIf="f['password'].touched && f['password'].invalid" class="invalid-feedback">
+							<div *ngIf="f['password'].errors?.['required']">Password is required.</div>
+							<div *ngIf="f['password'].errors?.['minlength']">Password must be at least 8 characters.</div>
+							<div *ngIf="f['password'].errors?.['pattern']">Password must include upper, lower and a number.</div>
+						</div>
+					</div>
+
+					<div class="col-md-6">
+						<label class="form-label">Confirm password</label>
+						<input type="password" formControlName="confirmPassword" class="form-control" [class.is-invalid]="(f['confirmPassword'].touched || form.touched) && (f['confirmPassword'].invalid || form.errors?.['passwordMismatch'])">
+						<div *ngIf="(f['confirmPassword'].touched || form.touched) && (f['confirmPassword'].invalid || form.errors?.['passwordMismatch'])" class="invalid-feedback">
+							<div *ngIf="f['confirmPassword'].errors?.['required']">Please confirm your password.</div>
+							<div *ngIf="form.errors?.['passwordMismatch']">Passwords do not match.</div>
+						</div>
+					</div>
+				</div>
+
+				<div *ngIf="serverError" class="alert alert-danger mt-3">{{ serverError }}</div>
+
+				<div class="d-flex justify-content-between align-items-center mt-4">
+					<div>
+						<small>Already have an account? <a routerLink="/login">Login</a></small>
+					</div>
+					<div>
+						<button class="btn btn-primary" type="submit" [disabled]="submitting">
+							<span *ngIf="!submitting">Register</span>
+							<span *ngIf="submitting" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+						</button>
+					</div>
+				</div>
+
+			</form>
+		</div>
+	</div>
+</div>

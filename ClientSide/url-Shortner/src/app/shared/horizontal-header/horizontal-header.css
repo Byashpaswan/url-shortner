@@ -1,0 +1,17 @@
+:root{
+	--header-bg: #ffffff;
+	--header-border: rgba(0,0,0,0.08);
+	--accent: #db7093;
+}
+
+.header-svg{
+	width:22px;
+	height:22px;
+	display:block;
+	stroke:currentColor;
+}
+
+/* subtle hover color using Bootstrap variables where available */
+.nav-link:hover{
+	color: #db7093; /* small, acceptable override for hover state */
+}

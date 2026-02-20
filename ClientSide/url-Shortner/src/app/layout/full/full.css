@@ -1,0 +1,21 @@
+/* 
+.row .card:hover {
+    box-shadow: 0 5px 15px rgba(223, 43, 103, 0.4) !important; 
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out; 
+    transform: translateY(-5px); 
+} */
+
+/* 1. Base State: Set the transition here */
+.row .card {
+    transition: all 0.3s ease-in-out!important;
+    border: 1px solid rgba(0,0,0,0.125) !important; /* Default Bootstrap border */
+}
+
+/* 2. Hover State: Lift and Shadow */
+.row .card:hover {
+    /* x-offset | y-offset | blur | color */
+    box-shadow: 0 10px 20px rgba(219, 112, 147, 0.3)!important; 
+    transform: translateY(-8px); /* Lifts the card up slightly */
+    border-color: palevioletred !important;  /* Optional: change border to match shadow */
+}

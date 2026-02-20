@@ -1,0 +1,11 @@
+<nav class="nav flex-column p-2">
+  <ul class="nav nav-pills flex-column mb-auto">
+    <li *ngFor="let item of menuItems" class="nav-item">
+  <a [routerLink]="item.path" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-link d-flex align-items-center">
+        <!-- icon placeholder: if you include an icon font, the icon class will work -->
+        <i *ngIf="item.icon" class="me-2" [class]="item.icon" aria-hidden="true"></i>
+        <span>{{ item.title }}</span>
+      </a>
+    </li>
+  </ul>
+</nav>

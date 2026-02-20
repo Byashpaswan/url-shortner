@@ -1,0 +1,37 @@
+<app-horizontal-header></app-horizontal-header>
+
+<!-- Offcanvas for small screens -->
+<div class="offcanvas offcanvas-start" tabindex="-1" id="sidebarOffcanvas" aria-labelledby="sidebarOffcanvasLabel">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title" id="sidebarOffcanvasLabel">Menu</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body">
+    <app-vertical-sidebar></app-vertical-sidebar>
+  </div>
+</div>
+
+<div class="container-fluid">
+  <div class="row">
+    <!-- Desktop sidebar -->
+    <aside class="col-md-3 col-lg-2 d-none d-md-block bg-light sidebar-desktop">
+      <app-vertical-sidebar></app-vertical-sidebar>
+    </aside>
+
+    <!-- Main content -->
+    <div class="col">
+      <nav aria-label="breadcrumb" class="p-2 bg-light border-bottom">
+        <ol class="breadcrumb mb-0">
+          <li *ngFor="let bc of breadcrumbs; let last = last" class="breadcrumb-item" [class.active]="last">
+            <a *ngIf="!last" [routerLink]="bc.url">{{ bc.label }}</a>
+            <span *ngIf="last">{{ bc.label }}</span>
+          </li>
+        </ol>
+      </nav>
+
+      <main class="p-3">
+        <router-outlet></router-outlet>
+      </main>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,16 @@
+/* Sidebar uses Bootstrap for layout; keep minimal sizing tweaks here */
+.sidebar-desktop{
+	min-width: 220px;
+	max-width: 260px;
+	height: calc(100vh - 56px); /* account for header height */
+	overflow-y: auto;
+	padding-top: .5rem;
+}
+
+.nav-link{
+	color: #333;
+}
+.nav-link.active, .nav-link:hover{
+	color: #fff;
+	background-color: #0d6efd; /* bootstrap primary */
+}

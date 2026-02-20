@@ -1,0 +1,8 @@
+/* Minimal form tweaks to complement Bootstrap */
+.card-title{
+  font-weight:600;
+}
+
+.invalid-feedback{
+  display:block;
+}
