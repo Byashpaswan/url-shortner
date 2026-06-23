@@ -1,5 +1,5 @@
 export const environment = {
     production: true,
-    scheme: 'https://',
-    apiUrl: 'localhost:3000'
+    scheme: typeof window !== 'undefined' ? window.location.protocol + '//' : 'https://',
+    apiUrl: typeof window !== 'undefined' ? window.location.hostname + ':3000' : 'localhost:3000'
 };

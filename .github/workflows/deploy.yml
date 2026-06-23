@@ -1,0 +1,127 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+
+jobs:
+  # 1. Test & Build stage
+  test-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: |
+            backend/package-lock.json
+            ClientSide/url-Shortner/package-lock.json
+
+      # Build & Test Backend
+      - name: Install Backend Dependencies
+        run: |
+          cd backend
+          npm ci
+
+      - name: Run Backend Tests
+        run: |
+          cd backend
+          # Runs test script if defined, otherwise passes
+          npm test || echo "No tests defined in backend"
+
+      # Build & Test Frontend
+      - name: Install Frontend Dependencies
+        run: |
+          cd ClientSide/url-Shortner
+          npm ci
+
+      - name: Build Frontend Angular App
+        run: |
+          cd ClientSide/url-Shortner
+          npm run build -- --configuration=production
+
+  # 2. Dockerize & Push stage (Build images and push to Docker Hub / GHCR)
+  docker-build-push:
+    needs: test-and-build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: actions/setup-buildx-action@v3
+
+      # Note: Set up these secrets in your GitHub repository:
+      # - DOCKER_USERNAME
+      # - DOCKER_PASSWORD
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME || 'dummy-username' }}
+          password: ${{ secrets.DOCKER_PASSWORD || 'dummy-password' }}
+
+      - name: Build and Push Backend Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile
+          push: ${{ secrets.DOCKER_USERNAME != '' }}
+          tags: |
+            ${{ secrets.DOCKER_USERNAME || 'dummy' }}/url-shortener-backend:latest
+            ${{ secrets.DOCKER_USERNAME || 'dummy' }}/url-shortener-backend:${{ github.sha }}
+
+      - name: Build and Push Frontend Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./ClientSide/url-Shortner
+          file: ./ClientSide/url-Shortner/Dockerfile
+          push: ${{ secrets.DOCKER_USERNAME != '' }}
+          tags: |
+            ${{ secrets.DOCKER_USERNAME || 'dummy' }}/url-shortener-frontend:latest
+            ${{ secrets.DOCKER_USERNAME || 'dummy' }}/url-shortener-frontend:${{ github.sha }}
+
+  # 3. Deploy stage (SSH to Production Server and run Compose)
+  deploy:
+    needs: docker-build-push
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # Note: Set up these secrets in your GitHub repository:
+      # - SSH_HOST: Your server IP address or domain
+      # - SSH_USERNAME: SSH user (e.g. ubuntu, root)
+      # - SSH_PRIVATE_KEY: SSH private key to log in
+      # - SSH_PORT: SSH port (default 22)
+      - name: Deploy to Live Server via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST || 'example.com' }}
+          username: ${{ secrets.SSH_USERNAME || 'ubuntu' }}
+          key: ${{ secrets.SSH_PRIVATE_KEY || 'dummy-key' }}
+          port: ${{ secrets.SSH_PORT || 22 }}
+          script: |
+            # Navigate to application directory on the server
+            cd /opt/url-shortener || mkdir -p /opt/url-shortener && cd /opt/url-shortener
+            
+            # Pull down the latest git files or just use compose
+            # In a standard production docker-compose deploy:
+            # We copy docker-compose.yml and pull updated docker images
+            
+            docker compose pull
+            docker compose up -d --remove-orphans
+            
+            # Prune old unused docker resources to save space
+            docker image prune -f

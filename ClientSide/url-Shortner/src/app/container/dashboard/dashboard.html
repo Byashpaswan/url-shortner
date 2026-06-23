@@ -1,1 +1,192 @@
-<p>dashboard works!</p>  
+<div class="dashboard-wrapper py-4 px-2">
+  <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+    <div>
+      <h2 class="dashboard-title text-gradient">Dashboard</h2>
+      <p class="text-subtitle">Overview of your shortened links and click analytics</p>
+    </div>
+    <div class="d-flex gap-2">
+      <button class="btn btn-premium-secondary d-flex align-items-center gap-2" (click)="loadAnalytics()" [disabled]="loading">
+        <svg class="icon-svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 7.89M9 11l3 3L22 4" />
+        </svg>
+        <span>Refresh</span>
+      </button>
+      <a routerLink="/shorten-url" class="btn btn-premium-primary d-flex align-items-center gap-2">
+        <svg class="icon-svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        </svg>
+        <span>Shorten New URL</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="d-flex justify-content-center align-items-center py-5">
+    <div class="spinner-premium" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <!-- Error Alerts -->
+  <div *ngIf="error" class="alert alert-premium-danger alert-dismissible fade show mb-4" role="alert">
+    <strong>Error!</strong> {{ error }}
+    <button type="button" class="btn-close" (click)="error = null" aria-label="Close"></button>
+  </div>
+
+  <!-- Success Notifications -->
+  <div *ngIf="successMessage" class="toast-premium show" role="status">
+    <div class="toast-premium-body">
+      {{ successMessage }}
+    </div>
+  </div>
+
+  <div *ngIf="!loading">
+    <!-- Stat Cards Grid -->
+    <div class="row g-4 mb-4">
+      <!-- Card 1 -->
+      <div class="col-md-4">
+        <div class="premium-card card-gradient-blue border-0 shadow-sm rounded-4 p-4 position-relative overflow-hidden">
+          <div class="card-glow"></div>
+          <div class="d-flex align-items-center justify-content-between position-relative z-1">
+            <div>
+              <span class="text-uppercase text-white-50 font-weight-bold fs-7 letter-spacing-1">Total Links</span>
+              <h3 class="display-6 font-weight-bold text-white mt-1 mb-0">{{ totalUrls }}</h3>
+            </div>
+            <div class="icon-wrapper bg-white-10 rounded-circle p-3">
+              <svg class="stat-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="col-md-4">
+        <div class="premium-card card-gradient-purple border-0 shadow-sm rounded-4 p-4 position-relative overflow-hidden">
+          <div class="card-glow"></div>
+          <div class="d-flex align-items-center justify-content-between position-relative z-1">
+            <div>
+              <span class="text-uppercase text-white-50 font-weight-bold fs-7 letter-spacing-1">Total Clicks</span>
+              <h3 class="display-6 font-weight-bold text-white mt-1 mb-0">{{ totalClicks }}</h3>
+            </div>
+            <div class="icon-wrapper bg-white-10 rounded-circle p-3">
+              <svg class="stat-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="col-md-4">
+        <div class="premium-card card-gradient-pink border-0 shadow-sm rounded-4 p-4 position-relative overflow-hidden">
+          <div class="card-glow"></div>
+          <div class="d-flex align-items-center justify-content-between position-relative z-1">
+            <div>
+              <span class="text-uppercase text-white-50 font-weight-bold fs-7 letter-spacing-1">Avg. Clicks</span>
+              <h3 class="display-6 font-weight-bold text-white mt-1 mb-0">{{ avgClicks }}</h3>
+            </div>
+            <div class="icon-wrapper bg-white-10 rounded-circle p-3">
+              <svg class="stat-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table Section -->
+    <div class="premium-table-card rounded-4 border-0 shadow-sm overflow-hidden mb-5">
+      <div class="card-header bg-white py-3 px-4 d-flex justify-content-between align-items-center border-bottom-light">
+        <h5 class="mb-0 text-dark font-weight-bold">Shortened URL Catalog</h5>
+        <span class="badge bg-soft-primary px-3 py-2 rounded-pill font-weight-semibold text-primary">{{ urls.length }} URL(s)</span>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0 custom-table">
+          <thead class="table-light-header">
+            <tr>
+              <th scope="col" class="py-3 px-4">Original URL</th>
+              <th scope="col" class="py-3">Short URL</th>
+              <th scope="col" class="py-3">Clicks</th>
+              <th scope="col" class="py-3">Created Date</th>
+              <th scope="col" class="py-3 text-end px-4">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let url of urls" class="table-row-hover">
+              <td class="px-4 py-3 text-wrap max-width-url">
+                <div class="original-url-cell text-truncate" [title]="url.originalUrl">
+                  {{ url.originalUrl }}
+                </div>
+              </td>
+              <td class="py-3">
+                <a [href]="url.shortUrl" target="_blank" class="short-link d-inline-flex align-items-center gap-1">
+                  <span>{{ url.shortCode }}</span>
+                  <svg class="external-link-svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                  </svg>
+                </a>
+              </td>
+              <td class="py-3">
+                <span class="badge bg-soft-success text-success px-3 py-2 rounded-pill font-weight-bold">
+                  {{ url.clicks }} clicks
+                </span>
+              </td>
+              <td class="py-3 text-muted small">
+                {{ url.createdAt | date:'mediumDate' }}
+              </td>
+              <td class="py-3 text-end px-4">
+                <div class="d-inline-flex gap-2 justify-content-end align-items-center">
+                  <button class="btn btn-action btn-outline-info" (click)="copy(url.shortUrl)" title="Copy Link">
+                    <svg class="action-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                    </svg>
+                  </button>
+                  <button class="btn btn-action btn-outline-primary" (click)="open(url.shortUrl)" title="Open Link">
+                    <svg class="action-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                  </button>
+                  
+                  <!-- Normal Delete Button -->
+                  <button *ngIf="deletingCode !== url.shortCode" class="btn btn-action btn-outline-danger" (click)="confirmDelete(url.shortCode)" title="Delete Link">
+                    <svg class="action-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </button>
+
+                  <!-- Confirming Delete State -->
+                  <div *ngIf="deletingCode === url.shortCode" class="d-flex align-items-center gap-1 delete-confirm-panel">
+                    <span class="small text-danger me-1 font-weight-semibold">Confirm?</span>
+                    <button class="btn btn-xs btn-danger" (click)="deleteLink(url.shortCode)">Yes</button>
+                    <button class="btn btn-xs btn-secondary" (click)="cancelDelete()">No</button>
+                  </div>
+                </div>
+              </td>
+            </tr>
+
+            <!-- Empty State inside Table -->
+            <tr *ngIf="urls.length === 0">
+              <td colspan="5" class="py-5 text-center text-muted">
+                <div class="empty-state py-4">
+                  <svg class="empty-icon text-muted mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                  </svg>
+                  <h5>No URLs shortened yet!</h5>
+                  <p class="mb-3">Shorten your first long link to see live click analytics.</p>
+                  <a routerLink="/shorten-url" class="btn btn-sm btn-premium-primary">Get Started</a>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

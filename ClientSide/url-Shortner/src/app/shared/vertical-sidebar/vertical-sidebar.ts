@@ -2,8 +2,9 @@ import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { VerticalSidebarService } from './verical-sidebar-service';
 import { RouteInfo } from './vertical-sidebar.metedata';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { TokenService } from '../../services/token-service';
 
 @Component({
   selector: 'app-vertical-sidebar',
@@ -16,7 +17,11 @@ export class VerticalSidebar implements OnInit, OnDestroy {
   menuItems: RouteInfo[] = [];
   private sub?: Subscription;
 
-  constructor(private menuService: VerticalSidebarService) {}
+  constructor(
+    private menuService: VerticalSidebarService,
+    private tokenService: TokenService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.menuItems = this.menuService.MENUITEMS;
@@ -26,6 +31,11 @@ export class VerticalSidebar implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.sub?.unsubscribe();
+  }
+
+  logout(): void {
+    this.tokenService.token = null;
+    this.router.navigate(['/login']);
   }
 
 }

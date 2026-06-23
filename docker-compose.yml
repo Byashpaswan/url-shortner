@@ -1,9 +1,21 @@
 version: '3.8'
 
 services:
-  app:
-    build: .
-    container_name: express-app
+  frontend:
+    build:
+      context: ./ClientSide/url-Shortner
+      dockerfile: Dockerfile
+    container_name: url-shortener-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: url-shortener-backend
     ports:
       - "3000:3000"
     environment:
@@ -20,7 +32,7 @@ services:
 
   mongo:
     image: mongo:7
-    container_name: mongodb
+    container_name: url-shortener-mongodb
     ports:
       - "27017:27017"
     volumes:
@@ -28,7 +40,7 @@ services:
 
   redis:
     image: redis:alpine
-    container_name: redis-cache
+    container_name: url-shortener-redis
     ports:
       - "6379:6379"
 

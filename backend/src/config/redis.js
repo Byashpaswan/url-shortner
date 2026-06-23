@@ -45,6 +45,15 @@ exports.set = async (key, value, opt) => {
     }
 };
 
+// Generic del wrapper
+exports.del = async (key) => {
+    try {
+        await redisClient.del(key);
+    } catch (error) {
+        console.error('Redis DEL error:', error);
+    }
+};
+
 // Backwards-compatible aliases used elsewhere in the repo
 exports.getCode = exports.get;
 exports.setCode = exports.set;

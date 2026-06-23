@@ -19,5 +19,9 @@ export class UrlService {
   analytics() {
     return this.http.get(`${this.api}/url/analytics`);
   }
+
+  delete(code: string) {
+    return this.http.delete(`${this.api}/url/${code}`);
+  }
   
 }
